@@ -12,7 +12,7 @@
 	<artifactId>user-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>user-service</name>
-	<description>Demo project for Spring Boot</description>
+	<description>User Service - Authentication, Authorization, User Management, and Follow System</description>
 	<url/>
 	<licenses>
 		<license/>
