@@ -1,0 +1,113 @@
+.post-detail {
+  display: grid;
+  gap: 16px;
+}
+
+.post-card {
+  display: grid;
+  gap: 12px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--cp-muted);
+  font-size: 12px;
+}
+
+.author-block {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.media-grid img {
+  width: 100%;
+  border: 2px solid var(--cp-border);
+}
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.comment-box {
+  display: grid;
+  gap: 10px;
+}
+
+.comments {
+  display: grid;
+  gap: 12px;
+}
+
+.comment-card {
+  display: grid;
+  gap: 6px;
+}
+
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--cp-muted);
+}
+
+.comment-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  font-family: var(--cp-font-pixel);
+  padding: 8px 12px;
+  background: var(--cp-accent);
+  border: 2px solid var(--cp-border);
+  color: var(--cp-bg);
+  cursor: pointer;
+}
+
+.btn.secondary {
+  background: var(--cp-accent-soft);
+  color: var(--cp-text);
+}
+
+.btn.danger {
+  background: #d63b3b;
+  color: #fff;
+}
+
+.section-title {
+  font-family: var(--cp-font-pixel);
+  font-size: 14px;
+  margin: 0;
+}
+
+.link {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 13px;
+}

@@ -1,0 +1,65 @@
+<section class="feed">
+  <div class="pixel-card toolbar">
+    <div class="search">
+      <input type="text" placeholder="Search posts" [value]="searchQuery()" (input)="searchQuery.set(($any($event.target)).value)" />
+      <button-shared size="sm" type="button" (click)="submitSearch()">Search</button-shared>
+    </div>
+  </div>
+
+  <div class="pixel-card composer">
+    <h2 class="section-title">New Post</h2>
+    <form [formGroup]="form" (ngSubmit)="submitPost()">
+      <textarea rows="4" formControlName="content" placeholder="Share something..."></textarea>
+
+      <div class="composer-actions">
+        <input type="file" multiple (change)="onFileChange($event)" />
+        <button-shared size="md" type="submit" [disabled]="loading()">Post</button-shared>
+      </div>
+
+      @if (selectedFiles.length) {
+        <div class="file-list">
+          @for (file of selectedFiles; track file.name) {
+            <span class="pixel-badge">{{ file.name }}</span>
+          }
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+    </form>
+  </div>
+
+  <div class="feed-list">
+    @if (!posts().length) {
+      @if (mode() === 'feed') {
+        <div class="pixel-card empty-state">
+          <p>No posts in your feed yet.</p>
+          <button-shared variant="secondary" size="sm" routerLink="/global">Explore Global</button-shared>
+        </div>
+      } @else {
+        <div class="pixel-card">No posts yet.</div>
+      }
+    } @else {
+      @for (post of posts(); track post.id) {
+        <article class="pixel-card post-card">
+          <div class="post-aside">
+            <a class="author link" [routerLink]="authorLink(post.userId)">{{ post.username ?? 'user' }}</a>
+            <avatar-shared [src]="post.profilePictureUrl" size="lg"></avatar-shared>
+          </div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="timestamp">{{ post.createdAt | date: 'short' }}</span>
+            </div>
+            <p class="content">{{ post.contentPreview }}</p>
+            <div class="post-actions">
+              <span class="pixel-badge">Likes: {{ post.likeCount }}</span>
+              <span class="pixel-badge">Comments: {{ post.commentCount }}</span>
+              <a class="link" [routerLink]="['/posts', post.id]">Open</a>
+            </div>
+          </div>
+        </article>
+      }
+    }
+  </div>
+</section>

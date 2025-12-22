@@ -1,0 +1,103 @@
+<div class="post-detail">
+  <a class="link" routerLink="/feed">Back to feed</a>
+
+  @if (loading()) {
+    <div class="pixel-card">Loading...</div>
+  } @else {
+    @if (post()) {
+      <article class="pixel-card post-card">
+        <div class="post-meta">
+          <div class="author-block">
+            <a class="author link" [routerLink]="authorLink()">{{ post()?.username ?? 'user' }}</a>
+            <avatar-shared [src]="post()?.profilePictureUrl" size="md"></avatar-shared>
+          </div>
+          <span class="timestamp">{{ post()?.createdAt | date: 'short' }}</span>
+        </div>
+
+        <p class="content">{{ post()?.content }}</p>
+
+        @if (mediaUrls().length) {
+          <div class="media-grid">
+            @for (url of mediaUrls(); track url) {
+              <img [src]="url" alt="media" />
+            }
+          </div>
+        }
+
+        <div class="post-actions">
+          <button class="btn" type="button" (click)="togglePostLike()">
+            @if (post()?.likedByCurrentUser) {
+              <span>Unlike</span>
+            } @else {
+              <span>Like</span>
+            }
+          </button>
+          <span class="pixel-badge">Likes: {{ post()?.likeCount }}</span>
+          <span class="pixel-badge">Comments: {{ post()?.commentCount }}</span>
+        </div>
+
+        @if (canEdit()) {
+          <div class="edit-actions">
+            <button class="btn secondary" type="button" (click)="toggleEdit()">Edit</button>
+            <button class="btn danger" type="button" (click)="deletePost()">Delete</button>
+          </div>
+        }
+
+        @if (editing()) {
+          <form class="edit-form" [formGroup]="editForm" (ngSubmit)="saveEdit()">
+            <label class="field">
+              <span>Content</span>
+              <textarea rows="4" formControlName="content"></textarea>
+            </label>
+            <label class="field">
+              <span>Media URLs (comma-separated)</span>
+              <input type="text" formControlName="mediaUrls" />
+            </label>
+            <button class="btn" type="submit">Save changes</button>
+          </form>
+        }
+      </article>
+    }
+  }
+
+  <section class="pixel-card comment-box">
+    <h3 class="section-title">Add comment</h3>
+    <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
+      <textarea rows="3" formControlName="content"></textarea>
+      <button class="btn" type="submit">Comment</button>
+    </form>
+  </section>
+
+  <section class="comments">
+    @if (!comments().length) {
+      <div class="pixel-card">No comments yet.</div>
+    } @else {
+      @for (comment of comments(); track comment.id) {
+        <div class="pixel-card comment-card">
+          <div class="comment-meta">
+            <span>{{ comment.username ?? 'user' }}</span>
+            <span>{{ comment.createdAt | date: 'short' }}</span>
+          </div>
+          <p>{{ comment.content }}</p>
+          <div class="comment-actions">
+            <button class="btn secondary" type="button" (click)="toggleCommentLike(comment)">
+              @if (comment.likedByCurrentUser) {
+                <span>Unlike</span>
+              } @else {
+                <span>Like</span>
+              }
+            </button>
+            <span class="pixel-badge">Likes: {{ comment.likeCount }}</span>
+            @if (canEditComment(comment)) {
+              <button class="btn danger" type="button" (click)="deleteComment(comment)">Delete</button>
+            }
+          </div>
+        </div>
+      }
+    }
+  </section>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</div>
