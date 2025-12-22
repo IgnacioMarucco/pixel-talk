@@ -39,11 +39,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/posts/post-detail.component').then(m => m.PostDetailComponent)
       },
       {
-        path: 'profile',
-        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
-      },
-      {
-        path: 'users/:id',
+        path: 'u/:username',
         loadComponent: () => import('./features/users/user-profile.component').then(m => m.UserProfileComponent)
       }
     ]

@@ -115,10 +115,12 @@ export class PostDetailComponent {
       return ['/feed'];
     }
     const auth = this.authService.auth();
-    if (auth && auth.userId === post.userId) {
-      return ['/profile'];
+    const target = post.username?.trim();
+    if (auth && (auth.userId === post.userId || auth.username?.trim() === target)) {
+      const selfName = auth.username?.trim() ?? target;
+      return selfName ? ['/u', selfName] : ['/feed'];
     }
-    return ['/users', post.userId];
+    return target ? ['/u', target] : ['/feed'];
   }
 
   toggleEdit() {

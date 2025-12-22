@@ -44,7 +44,7 @@
       @for (post of posts(); track post.id) {
         <article class="pixel-card post-card">
           <div class="post-aside">
-            <a class="author link" [routerLink]="authorLink(post.userId)">{{ post.username ?? 'user' }}</a>
+            <a class="author link" [routerLink]="authorLink(post.username, post.userId)">{{ post.username ?? 'user' }}</a>
             <avatar-shared [src]="post.profilePictureUrl" size="lg"></avatar-shared>
           </div>
           <div class="post-body">

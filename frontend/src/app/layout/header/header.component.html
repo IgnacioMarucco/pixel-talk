@@ -9,7 +9,7 @@
       <button-shared 
         variant="secondary" 
         size="sm" 
-        routerLink="/profile"
+        [routerLink]="profileLink()"
         [label]="displayName()"
       />
       <button-shared size="sm" type="button" (click)="logout()">Logout</button-shared>

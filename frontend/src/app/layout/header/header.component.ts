@@ -17,6 +17,10 @@ export class HeaderComponent {
     const name = this.authService.auth()?.username?.trim();
     return name || 'Profile';
   });
+  readonly profileLink = computed(() => {
+    const username = this.authService.auth()?.username?.trim();
+    return username ? ['/u', username] : ['/feed'];
+  });
   readonly navItems: TabsSharedItem[] = [
     { label: 'Feed', link: '/feed' },
     { label: 'Global', link: '/global' },

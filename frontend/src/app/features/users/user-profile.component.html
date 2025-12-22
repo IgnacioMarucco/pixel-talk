@@ -1,0 +1,67 @@
+<div class="user-profile">
+  @if (user()) {
+    <div class="pixel-card profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          @if (user()?.profilePictureUrl) {
+            <img [src]="user()?.profilePictureUrl" alt="avatar" />
+          } @else {
+            <span>?</span>
+          }
+        </div>
+        <div>
+          <h2 class="title">{{ user()?.username }}</h2>
+          <p class="meta">{{ user()?.email }}</p>
+          <div class="counts">
+            <span class="pixel-badge">Followers: {{ followersCount() }}</span>
+            <span class="pixel-badge">Following: {{ followingCount() }}</span>
+          </div>
+        </div>
+      </div>
+      @if (!isOwnProfile()) {
+        <button class="btn" type="button" (click)="toggleFollow()">
+          @if (following()) {
+            <span>Unfollow</span>
+          } @else {
+            <span>Follow</span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (isOwnProfile()) {
+      <div class="pixel-card">
+        <h3 class="section-title">Edit profile</h3>
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" formControlName="email" />
+          </label>
+          <label class="field">
+            <span>First name</span>
+            <input type="text" formControlName="firstName" />
+          </label>
+          <label class="field">
+            <span>Last name</span>
+            <input type="text" formControlName="lastName" />
+          </label>
+          <label class="field">
+            <span>Profile picture URL</span>
+            <input type="text" formControlName="profilePictureUrl" />
+          </label>
+          <label class="field">
+            <span>Bio</span>
+            <textarea rows="3" formControlName="bio"></textarea>
+          </label>
+          <button class="btn" type="submit" [disabled]="saving()">Save</button>
+        </form>
+      </div>
+    }
+  } @else {
+    <div class="pixel-card">Loading user...</div>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</div>

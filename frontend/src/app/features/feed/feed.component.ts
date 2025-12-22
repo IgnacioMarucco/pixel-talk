@@ -107,12 +107,14 @@ export class FeedComponent {
     });
   }
 
-  authorLink(userId: number) {
+  authorLink(username: string | undefined, userId: number) {
     const auth = this.authService.auth();
-    if (auth && auth.userId === userId) {
-      return ['/profile'];
+    const target = username?.trim();
+    if (auth && (auth.userId === userId || auth.username?.trim() === target)) {
+      const selfName = auth.username?.trim() ?? target;
+      return selfName ? ['/u', selfName] : ['/feed'];
     }
-    return ['/users', userId];
+    return target ? ['/u', target] : ['/feed'];
   }
 
   onFileChange(event: Event) {
