@@ -29,6 +29,16 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     Page<PostEntity> findByUserIdAndDeletedAtIsNull(@Param("userId") Long userId, Pageable pageable);
 
     /**
+     * Find all active posts by a list of user IDs.
+     *
+     * @param userIds  User IDs
+     * @param pageable Pagination info
+     * @return Page of posts
+     */
+    @Query("SELECT p FROM PostEntity p WHERE p.userId IN :userIds AND p.deletedAt IS NULL ORDER BY p.createdAt DESC")
+    Page<PostEntity> findByUserIdInAndDeletedAtIsNull(@Param("userIds") List<Long> userIds, Pageable pageable);
+
+    /**
      * Find all active posts ordered by creation date.
      *
      * @param pageable Pagination info

@@ -13,6 +13,7 @@ public class UserProfileDto {
     private String username;
     private String firstName;
     private String lastName;
+    private String profilePictureUrl;
 
     public String toFullName() {
         if (firstName != null && lastName != null) {

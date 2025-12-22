@@ -39,6 +39,16 @@ public interface PostService {
     Page<PostSummaryDto> getAllPosts(Pageable pageable);
 
     /**
+     * Get posts from users the current user follows (excluding own posts).
+     */
+    Page<PostSummaryDto> getFollowingPosts(Long userId, Pageable pageable);
+
+    /**
+     * Get feed posts for current user (own posts + following).
+     */
+    Page<PostSummaryDto> getFeedPosts(Long userId, Pageable pageable);
+
+    /**
      * Get posts by user.
      */
     Page<PostSummaryDto> getPostsByUserId(Long userId, Pageable pageable);

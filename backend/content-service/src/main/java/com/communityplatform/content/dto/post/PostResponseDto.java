@@ -34,6 +34,11 @@ public class PostResponseDto {
     private String username;
 
     /**
+     * Author profile picture URL.
+     */
+    private String profilePictureUrl;
+
+    /**
      * Author full name (optional).
      */
     private String authorFullName;

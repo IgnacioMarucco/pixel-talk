@@ -33,6 +33,11 @@ public class PostSummaryDto {
     private String username;
 
     /**
+     * Author profile picture URL.
+     */
+    private String profilePictureUrl;
+
+    /**
      * Truncated content preview (first 200 chars).
      */
     private String contentPreview;

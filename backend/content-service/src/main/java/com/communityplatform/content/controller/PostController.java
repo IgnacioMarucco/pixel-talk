@@ -106,6 +106,32 @@ public class PostController {
                 return ResponseEntity.ok(response);
         }
 
+        @Operation(summary = "Get posts from following users")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Following posts retrieved successfully")
+        })
+        @GetMapping("/following")
+        public ResponseEntity<Page<PostSummaryDto>> getFollowingPosts(
+                        @RequestHeader("X-User-Id") Long userId,
+                        @PageableDefault(size = 20) Pageable pageable) {
+                log.info("Getting following posts for user: {}", userId);
+                Page<PostSummaryDto> response = postService.getFollowingPosts(userId, pageable);
+                return ResponseEntity.ok(response);
+        }
+
+        @Operation(summary = "Get feed posts (own + following)")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Feed posts retrieved successfully")
+        })
+        @GetMapping("/feed")
+        public ResponseEntity<Page<PostSummaryDto>> getFeedPosts(
+                        @RequestHeader("X-User-Id") Long userId,
+                        @PageableDefault(size = 20) Pageable pageable) {
+                log.info("Getting feed posts for user: {}", userId);
+                Page<PostSummaryDto> response = postService.getFeedPosts(userId, pageable);
+                return ResponseEntity.ok(response);
+        }
+
         @Operation(summary = "Get trending posts")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Trending posts retrieved successfully")

@@ -26,6 +26,7 @@ public interface PostMapper {
      * Convert Entity to ResponseDto.
      */
     @Mapping(target = "username", ignore = true)
+    @Mapping(target = "profilePictureUrl", ignore = true)
     @Mapping(target = "authorFullName", ignore = true)
     @Mapping(target = "likedByCurrentUser", ignore = true)
     PostResponseDto toResponseDto(PostEntity entity);
@@ -34,6 +35,7 @@ public interface PostMapper {
      * Convert Entity to SummaryDto.
      */
     @Mapping(target = "username", ignore = true)
+    @Mapping(target = "profilePictureUrl", ignore = true)
     @Mapping(target = "contentPreview", expression = "java(truncateContent(entity.getContent()))")
     PostSummaryDto toSummaryDto(PostEntity entity);
 

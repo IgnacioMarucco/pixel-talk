@@ -5,6 +5,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 import com.communityplatform.content.dto.post.PostCreateDto;
 import com.communityplatform.content.dto.post.PostResponseDto;
 import com.communityplatform.content.dto.post.PostSummaryDto;
@@ -123,6 +127,37 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<PostSummaryDto> getFollowingPosts(Long userId, Pageable pageable) {
+        log.debug("Getting following posts for user: {}", userId);
+        List<Long> followingIds = userServiceClient.getFollowingIds(userId);
+        if (followingIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        return postRepository.findByUserIdInAndDeletedAtIsNull(followingIds, pageable)
+                .map(postMapper::toSummaryDto)
+                .map(this::enrichPostSummary);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PostSummaryDto> getFeedPosts(Long userId, Pageable pageable) {
+        log.debug("Getting feed posts for user: {}", userId);
+        List<Long> followingIds = userServiceClient.getFollowingIds(userId);
+        if (userId != null) {
+            LinkedHashSet<Long> merged = new LinkedHashSet<>(followingIds);
+            merged.add(userId);
+            followingIds = new ArrayList<>(merged);
+        }
+        if (followingIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        return postRepository.findByUserIdInAndDeletedAtIsNull(followingIds, pageable)
+                .map(postMapper::toSummaryDto)
+                .map(this::enrichPostSummary);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<PostSummaryDto> searchPosts(String searchTerm, Pageable pageable) {
         log.debug("Searching posts with term: {}", searchTerm);
         return postRepository.searchByContent(searchTerm, pageable)
@@ -183,6 +218,7 @@ public class PostServiceImpl implements PostService {
                 .ifPresent(profile -> {
                     dto.setUsername(profile.getUsername());
                     dto.setAuthorFullName(profile.toFullName());
+                    dto.setProfilePictureUrl(profile.getProfilePictureUrl());
                 });
     }
 
@@ -191,7 +227,10 @@ public class PostServiceImpl implements PostService {
             return dto;
         }
         userServiceClient.getUserById(dto.getUserId())
-                .ifPresent(profile -> dto.setUsername(profile.getUsername()));
+                .ifPresent(profile -> {
+                    dto.setUsername(profile.getUsername());
+                    dto.setProfilePictureUrl(profile.getProfilePictureUrl());
+                });
         return dto;
     }
 }
