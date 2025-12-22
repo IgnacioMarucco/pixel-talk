@@ -39,6 +39,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final PostService postService;
     private final UserServiceClient userServiceClient;
+    private final com.communityplatform.content.repository.LikeRepository likeRepository;
 
     @Override
     public CommentResponseDto createComment(CommentCreateDto dto) {
@@ -65,12 +66,13 @@ public class CommentServiceImpl implements CommentService {
         log.info("Comment created with id: {}", saved.getId());
         CommentResponseDto response = commentMapper.toResponseDto(saved);
         enrichCommentAuthor(response);
+        response.setLikedByCurrentUser(false);
         return response;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CommentResponseDto getCommentById(Long commentId) {
+    public CommentResponseDto getCommentById(Long commentId, Long currentUserId) {
         log.debug("Getting comment by id: {}", commentId);
 
         CommentEntity entity = commentRepository.findById(commentId)
@@ -82,6 +84,13 @@ public class CommentServiceImpl implements CommentService {
 
         CommentResponseDto response = commentMapper.toResponseDto(entity);
         enrichCommentAuthor(response);
+        
+        // Set liked by current user
+        if (currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndCommentId(currentUserId, commentId);
+            response.setLikedByCurrentUser(liked);
+        }
+        
         return response;
     }
 
@@ -107,6 +116,13 @@ public class CommentServiceImpl implements CommentService {
 
         CommentResponseDto response = commentMapper.toResponseDto(updated);
         enrichCommentAuthor(response);
+        
+        // Set liked by current user
+        if (currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndCommentId(currentUserId, commentId);
+            response.setLikedByCurrentUser(liked);
+        }
+        
         return response;
     }
 
@@ -137,30 +153,30 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> getCommentsByPostId(Long postId, Pageable pageable) {
+    public Page<CommentResponseDto> getCommentsByPostId(Long postId, Long currentUserId, Pageable pageable) {
         log.debug("Getting comments for post: {}", postId);
         return commentRepository.findByPostIdAndActive(postId, pageable)
                 .map(commentMapper::toResponseDto)
-                .map(this::enrichCommentAuthor);
+                .map(dto -> enrichCommentWithLike(dto, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> getTopLevelComments(Long postId, Pageable pageable) {
+    public Page<CommentResponseDto> getTopLevelComments(Long postId, Long currentUserId, Pageable pageable) {
         log.debug("Getting top-level comments for post: {}", postId);
         return commentRepository.findTopLevelComments(postId, pageable)
                 .map(commentMapper::toResponseDto)
-                .map(this::enrichCommentAuthor);
+                .map(dto -> enrichCommentWithLike(dto, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getReplies(Long parentCommentId) {
+    public List<CommentResponseDto> getReplies(Long parentCommentId, Long currentUserId) {
         log.debug("Getting replies for comment: {}", parentCommentId);
         return commentRepository.findRepliesByParentId(parentCommentId)
                 .stream()
                 .map(commentMapper::toResponseDto)
-                .map(this::enrichCommentAuthor)
+                .map(dto -> enrichCommentWithLike(dto, currentUserId))
                 .collect(Collectors.toList());
     }
 
@@ -191,6 +207,15 @@ public class CommentServiceImpl implements CommentService {
                     dto.setUsername(profile.getUsername());
                     dto.setAuthorFullName(profile.toFullName());
                 });
+        return dto;
+    }
+    
+    private CommentResponseDto enrichCommentWithLike(CommentResponseDto dto, Long currentUserId) {
+        enrichCommentAuthor(dto);
+        if (dto != null && currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndCommentId(currentUserId, dto.getId());
+            dto.setLikedByCurrentUser(liked);
+        }
         return dto;
     }
 }

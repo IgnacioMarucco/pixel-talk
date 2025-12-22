@@ -37,6 +37,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserServiceClient userServiceClient;
+    private final com.communityplatform.content.repository.LikeRepository likeRepository;
 
     @Override
     public PostResponseDto createPost(PostCreateDto dto) {
@@ -51,6 +52,7 @@ public class PostServiceImpl implements PostService {
 
         PostResponseDto response = postMapper.toResponseDto(saved);
         enrichPostAuthor(response);
+        response.setLikedByCurrentUser(false);
         return response;
     }
 
@@ -64,6 +66,13 @@ public class PostServiceImpl implements PostService {
 
         PostResponseDto dto = postMapper.toResponseDto(entity);
         enrichPostAuthor(dto);
+        
+        // Set liked by current user
+        if (currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndPostId(currentUserId, postId);
+            dto.setLikedByCurrentUser(liked);
+        }
+        
         return dto;
     }
 
@@ -87,6 +96,13 @@ public class PostServiceImpl implements PostService {
 
         PostResponseDto response = postMapper.toResponseDto(updated);
         enrichPostAuthor(response);
+        
+        // Set liked by current user
+        if (currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndPostId(currentUserId, postId);
+            response.setLikedByCurrentUser(liked);
+        }
+        
         return response;
     }
 
@@ -109,20 +125,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostSummaryDto> getAllPosts(Pageable pageable) {
+    public Page<PostSummaryDto> getAllPosts(Long currentUserId, Pageable pageable) {
         log.debug("Getting all posts, page: {}", pageable.getPageNumber());
         return postRepository.findAllActive(pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostSummaryDto> getPostsByUserId(Long userId, Pageable pageable) {
+    public Page<PostSummaryDto> getPostsByUserId(Long userId, Long currentUserId, Pageable pageable) {
         log.debug("Getting posts for user: {}", userId);
         return postRepository.findByUserIdAndDeletedAtIsNull(userId, pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, currentUserId));
     }
 
     @Override
@@ -135,7 +151,7 @@ public class PostServiceImpl implements PostService {
         }
         return postRepository.findByUserIdInAndDeletedAtIsNull(followingIds, pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, userId));
     }
 
     @Override
@@ -153,25 +169,25 @@ public class PostServiceImpl implements PostService {
         }
         return postRepository.findByUserIdInAndDeletedAtIsNull(followingIds, pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, userId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostSummaryDto> searchPosts(String searchTerm, Pageable pageable) {
+    public Page<PostSummaryDto> searchPosts(String searchTerm, Long currentUserId, Pageable pageable) {
         log.debug("Searching posts with term: {}", searchTerm);
         return postRepository.searchByContent(searchTerm, pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostSummaryDto> getTrendingPosts(Pageable pageable) {
+    public Page<PostSummaryDto> getTrendingPosts(Long currentUserId, Pageable pageable) {
         log.debug("Getting trending posts");
         return postRepository.findTrendingPosts(pageable)
                 .map(postMapper::toSummaryDto)
-                .map(this::enrichPostSummary);
+                .map(dto -> enrichPostSummaryWithLike(dto, currentUserId));
     }
 
     @Override
@@ -231,6 +247,15 @@ public class PostServiceImpl implements PostService {
                     dto.setUsername(profile.getUsername());
                     dto.setProfilePictureUrl(profile.getProfilePictureUrl());
                 });
+        return dto;
+    }
+    
+    private PostSummaryDto enrichPostSummaryWithLike(PostSummaryDto dto, Long currentUserId) {
+        enrichPostSummary(dto);
+        if (dto != null && currentUserId != null) {
+            boolean liked = likeRepository.existsByUserIdAndPostId(currentUserId, dto.getId());
+            dto.setLikedByCurrentUser(liked);
+        }
         return dto;
     }
 }

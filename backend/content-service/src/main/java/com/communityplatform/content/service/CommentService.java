@@ -22,7 +22,7 @@ public interface CommentService {
     /**
      * Get comment by ID.
      */
-    CommentResponseDto getCommentById(Long commentId);
+    CommentResponseDto getCommentById(Long commentId, Long currentUserId);
 
     /**
      * Update an existing comment.
@@ -37,17 +37,17 @@ public interface CommentService {
     /**
      * Get all comments for a post.
      */
-    Page<CommentResponseDto> getCommentsByPostId(Long postId, Pageable pageable);
+    Page<CommentResponseDto> getCommentsByPostId(Long postId, Long currentUserId, Pageable pageable);
 
     /**
      * Get top-level comments for a post (no parent).
      */
-    Page<CommentResponseDto> getTopLevelComments(Long postId, Pageable pageable);
+    Page<CommentResponseDto> getTopLevelComments(Long postId, Long currentUserId, Pageable pageable);
 
     /**
      * Get replies for a comment.
      */
-    List<CommentResponseDto> getReplies(Long parentCommentId);
+    List<CommentResponseDto> getReplies(Long parentCommentId, Long currentUserId);
 
     /**
      * Increment like count.

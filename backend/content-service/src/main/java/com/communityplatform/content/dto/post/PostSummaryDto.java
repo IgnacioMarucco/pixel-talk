@@ -53,6 +53,11 @@ public class PostSummaryDto {
     private Integer commentCount;
 
     /**
+     * Whether the current user has liked this post.
+     */
+    private Boolean likedByCurrentUser;
+
+    /**
      * Post creation timestamp.
      */
     private LocalDateTime createdAt;

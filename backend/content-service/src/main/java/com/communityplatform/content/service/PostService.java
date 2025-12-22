@@ -36,7 +36,7 @@ public interface PostService {
     /**
      * Get all posts (feed).
      */
-    Page<PostSummaryDto> getAllPosts(Pageable pageable);
+    Page<PostSummaryDto> getAllPosts(Long currentUserId, Pageable pageable);
 
     /**
      * Get posts from users the current user follows (excluding own posts).
@@ -51,17 +51,17 @@ public interface PostService {
     /**
      * Get posts by user.
      */
-    Page<PostSummaryDto> getPostsByUserId(Long userId, Pageable pageable);
+    Page<PostSummaryDto> getPostsByUserId(Long userId, Long currentUserId, Pageable pageable);
 
     /**
      * Search posts by content.
      */
-    Page<PostSummaryDto> searchPosts(String searchTerm, Pageable pageable);
+    Page<PostSummaryDto> searchPosts(String searchTerm, Long currentUserId, Pageable pageable);
 
     /**
      * Get trending posts.
      */
-    Page<PostSummaryDto> getTrendingPosts(Pageable pageable);
+    Page<PostSummaryDto> getTrendingPosts(Long currentUserId, Pageable pageable);
 
     /**
      * Increment like count.

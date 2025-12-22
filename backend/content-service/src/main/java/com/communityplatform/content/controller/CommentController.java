@@ -59,9 +59,11 @@ public class CommentController {
                         @ApiResponse(responseCode = "404", description = "Comment not found")
         })
         @GetMapping("/comments/{commentId}")
-        public ResponseEntity<CommentResponseDto> getComment(@PathVariable Long commentId) {
+        public ResponseEntity<CommentResponseDto> getComment(
+                        @PathVariable Long commentId,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId) {
                 log.info("Getting comment: {}", commentId);
-                CommentResponseDto response = commentService.getCommentById(commentId);
+                CommentResponseDto response = commentService.getCommentById(commentId, currentUserId);
                 return ResponseEntity.ok(response);
         }
 
@@ -103,9 +105,10 @@ public class CommentController {
         @GetMapping("/posts/{postId}/comments")
         public ResponseEntity<Page<CommentResponseDto>> getCommentsByPost(
                         @PathVariable Long postId,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Getting comments for post: {}", postId);
-                Page<CommentResponseDto> response = commentService.getCommentsByPostId(postId, pageable);
+                Page<CommentResponseDto> response = commentService.getCommentsByPostId(postId, currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 
@@ -116,9 +119,10 @@ public class CommentController {
         @GetMapping("/posts/{postId}/comments/top")
         public ResponseEntity<Page<CommentResponseDto>> getTopLevelComments(
                         @PathVariable Long postId,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Getting top-level comments for post: {}", postId);
-                Page<CommentResponseDto> response = commentService.getTopLevelComments(postId, pageable);
+                Page<CommentResponseDto> response = commentService.getTopLevelComments(postId, currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 
@@ -127,9 +131,11 @@ public class CommentController {
                         @ApiResponse(responseCode = "200", description = "Replies retrieved successfully")
         })
         @GetMapping("/comments/{commentId}/replies")
-        public ResponseEntity<List<CommentResponseDto>> getReplies(@PathVariable Long commentId) {
+        public ResponseEntity<List<CommentResponseDto>> getReplies(
+                        @PathVariable Long commentId,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId) {
                 log.info("Getting replies for comment: {}", commentId);
-                List<CommentResponseDto> response = commentService.getReplies(commentId);
+                List<CommentResponseDto> response = commentService.getReplies(commentId, currentUserId);
                 return ResponseEntity.ok(response);
         }
 }

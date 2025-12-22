@@ -100,9 +100,10 @@ public class PostController {
         })
         @GetMapping
         public ResponseEntity<Page<PostSummaryDto>> getAllPosts(
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Getting all posts, page: {}", pageable.getPageNumber());
-                Page<PostSummaryDto> response = postService.getAllPosts(pageable);
+                Page<PostSummaryDto> response = postService.getAllPosts(currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 
@@ -138,9 +139,10 @@ public class PostController {
         })
         @GetMapping("/trending")
         public ResponseEntity<Page<PostSummaryDto>> getTrendingPosts(
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Getting trending posts");
-                Page<PostSummaryDto> response = postService.getTrendingPosts(pageable);
+                Page<PostSummaryDto> response = postService.getTrendingPosts(currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 
@@ -151,9 +153,10 @@ public class PostController {
         @GetMapping("/search")
         public ResponseEntity<Page<PostSummaryDto>> searchPosts(
                         @RequestParam String q,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Searching posts with term: {}", q);
-                Page<PostSummaryDto> response = postService.searchPosts(q, pageable);
+                Page<PostSummaryDto> response = postService.searchPosts(q, currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 
@@ -164,9 +167,10 @@ public class PostController {
         @GetMapping("/user/{userId}")
         public ResponseEntity<Page<PostSummaryDto>> getPostsByUser(
                         @PathVariable Long userId,
+                        @RequestHeader(value = "X-User-Id", required = false) Long currentUserId,
                         @PageableDefault(size = 20) Pageable pageable) {
                 log.info("Getting posts for user: {}", userId);
-                Page<PostSummaryDto> response = postService.getPostsByUserId(userId, pageable);
+                Page<PostSummaryDto> response = postService.getPostsByUserId(userId, currentUserId, pageable);
                 return ResponseEntity.ok(response);
         }
 }
