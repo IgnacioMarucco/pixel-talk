@@ -1,0 +1,55 @@
+:root {
+  --cp-bg: #f6f2ea;
+  --cp-surface: #ffffff;
+  --cp-text: #1a1a1a;
+  --cp-border: #1a1a1a;
+  --cp-accent: #ff6b4a;
+  --cp-accent-soft: #ffe3d9;
+  --cp-muted: #6b6b6b;
+  --cp-font-pixel: "Press Start 2P", "VT323", monospace;
+  --cp-font-body: "Space Grotesk", "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--cp-font-body);
+  background: var(--cp-bg);
+  color: var(--cp-text);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font-family: var(--cp-font-body);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--cp-border);
+  background: var(--cp-surface);
+}
+
+.pixel-card {
+  background: var(--cp-surface);
+  border: 3px solid var(--cp-border);
+  box-shadow: 6px 6px 0 0 var(--cp-border);
+  padding: 16px;
+}
+
+.pixel-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 2px solid var(--cp-border);
+  background: var(--cp-accent-soft);
+  font-size: 12px;
+}
