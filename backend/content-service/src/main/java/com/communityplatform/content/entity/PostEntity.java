@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
  * 
  * Features:
  * - Author reference (userId from user-service)
+ * - Title shown in feeds
  * - Text content
  * - Optional media URLs (stored in MinIO)
  * - Soft delete support
@@ -34,6 +35,12 @@ public class PostEntity extends BaseEntity {
      */
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    /**
+     * Post title (short summary shown in feeds).
+     */
+    @Column(name = "title", length = 100, nullable = false)
+    private String title;
 
     /**
      * Post content/text.

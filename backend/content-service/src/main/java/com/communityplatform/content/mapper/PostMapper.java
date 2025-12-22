@@ -36,7 +36,6 @@ public interface PostMapper {
      */
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "profilePictureUrl", ignore = true)
-    @Mapping(target = "contentPreview", expression = "java(truncateContent(entity.getContent()))")
     PostSummaryDto toSummaryDto(PostEntity entity);
 
     /**
@@ -44,13 +43,4 @@ public interface PostMapper {
      */
     void updateEntityFromDto(PostUpdateDto dto, @MappingTarget PostEntity entity);
 
-    /**
-     * Truncate content for summary (first 200 chars).
-     */
-    default String truncateContent(String content) {
-        if (content == null) {
-            return null;
-        }
-        return content.length() > 200 ? content.substring(0, 200) + "..." : content;
-    }
 }

@@ -146,7 +146,7 @@ public class PostController {
                 return ResponseEntity.ok(response);
         }
 
-        @Operation(summary = "Search posts by content")
+        @Operation(summary = "Search posts by title or content")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Posts retrieved successfully")
         })

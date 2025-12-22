@@ -38,9 +38,9 @@ public class PostSummaryDto {
     private String profilePictureUrl;
 
     /**
-     * Truncated content preview (first 200 chars).
+     * Post title.
      */
-    private String contentPreview;
+    private String title;
 
     /**
      * Like count.

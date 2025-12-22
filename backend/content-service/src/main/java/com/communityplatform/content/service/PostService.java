@@ -54,7 +54,7 @@ public interface PostService {
     Page<PostSummaryDto> getPostsByUserId(Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Search posts by content.
+     * Search posts by title or content.
      */
     Page<PostSummaryDto> searchPosts(String searchTerm, Long currentUserId, Pageable pageable);
 

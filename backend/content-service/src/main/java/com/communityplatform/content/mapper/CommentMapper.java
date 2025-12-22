@@ -24,6 +24,7 @@ public interface CommentMapper {
      */
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "authorFullName", ignore = true)
+    @Mapping(target = "profilePictureUrl", ignore = true)
     @Mapping(target = "likedByCurrentUser", ignore = true)
     CommentResponseDto toResponseDto(CommentEntity entity);
 }

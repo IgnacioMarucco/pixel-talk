@@ -206,6 +206,7 @@ public class CommentServiceImpl implements CommentService {
                 .ifPresent(profile -> {
                     dto.setUsername(profile.getUsername());
                     dto.setAuthorFullName(profile.toFullName());
+                    dto.setProfilePictureUrl(profile.getProfilePictureUrl());
                 });
         return dto;
     }

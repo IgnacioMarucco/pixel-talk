@@ -24,6 +24,13 @@ public class PostCreateDto {
     private Long userId;
 
     /**
+     * Post title.
+     */
+    @NotBlank(message = "Title cannot be blank")
+    @Size(min = 1, max = 100, message = "Title must be between 1 and 100 characters")
+    private String title;
+
+    /**
      * Post content/text.
      */
     @NotBlank(message = "Content cannot be blank")

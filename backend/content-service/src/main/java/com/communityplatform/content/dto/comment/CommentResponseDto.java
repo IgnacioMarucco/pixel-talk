@@ -42,6 +42,11 @@ public class CommentResponseDto {
     private String authorFullName;
 
     /**
+     * Author profile picture URL.
+     */
+    private String profilePictureUrl;
+
+    /**
      * Comment content.
      */
     private String content;

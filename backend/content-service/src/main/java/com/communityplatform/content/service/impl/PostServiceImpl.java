@@ -176,7 +176,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public Page<PostSummaryDto> searchPosts(String searchTerm, Long currentUserId, Pageable pageable) {
         log.debug("Searching posts with term: {}", searchTerm);
-        return postRepository.searchByContent(searchTerm, pageable)
+        return postRepository.searchByTitleOrContent(searchTerm, pageable)
                 .map(postMapper::toSummaryDto)
                 .map(dto -> enrichPostSummaryWithLike(dto, currentUserId));
     }

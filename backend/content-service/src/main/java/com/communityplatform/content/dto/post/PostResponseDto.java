@@ -44,6 +44,11 @@ public class PostResponseDto {
     private String authorFullName;
 
     /**
+     * Post title.
+     */
+    private String title;
+
+    /**
      * Post content.
      */
     private String content;

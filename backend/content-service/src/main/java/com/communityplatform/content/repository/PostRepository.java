@@ -48,14 +48,17 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     Page<PostEntity> findAllActive(Pageable pageable);
 
     /**
-     * Search posts by content (case-insensitive).
+     * Search posts by title or content (case-insensitive).
      *
      * @param searchTerm Search term
      * @param pageable   Pagination info
      * @return Page of matching posts
      */
-    @Query("SELECT p FROM PostEntity p WHERE p.deletedAt IS NULL AND LOWER(p.content) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY p.createdAt DESC")
-    Page<PostEntity> searchByContent(@Param("searchTerm") String searchTerm, Pageable pageable);
+    @Query("SELECT p FROM PostEntity p WHERE p.deletedAt IS NULL AND (" +
+            "LOWER(p.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(p.content) LIKE LOWER(CONCAT('%', :searchTerm, '%'))" +
+            ") ORDER BY p.createdAt DESC")
+    Page<PostEntity> searchByTitleOrContent(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     /**
      * Find single post by ID if active.
