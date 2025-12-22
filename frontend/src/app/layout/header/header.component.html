@@ -1,18 +1,18 @@
 <header class="app-header">
   <div class="header-left">
-    <div class="brand">community-platform</div>
+    <div class="brand">PixelTalk</div>
     <tabs-shared [items]="navItems" size="sm"></tabs-shared>
   </div>
 
   <div class="auth">
     @if (authService.auth()) {
-      <button-shared 
-        variant="secondary" 
-        size="sm" 
+      <button-shared
+        variant="secondary"
+        size="sm"
         [routerLink]="profileLink()"
         [label]="displayName()"
       />
-      <button-shared size="sm" type="button" (click)="logout()">Logout</button-shared>
+      <button-shared size="sm" type="button" (click)="logout()" label="Logout" />
     }
   </div>
 </header>

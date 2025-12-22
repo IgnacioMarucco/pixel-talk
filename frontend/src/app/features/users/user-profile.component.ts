@@ -6,11 +6,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { FollowService } from '../../core/services/follow.service';
 import { UserService } from '../../core/services/user.service';
 import { User } from '../../core/models/user.model';
+import { ButtonSharedComponent } from '../../shared/button-shared/button-shared.component';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonSharedComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })

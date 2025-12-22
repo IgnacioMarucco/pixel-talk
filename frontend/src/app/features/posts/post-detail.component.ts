@@ -7,13 +7,14 @@ import { LikeService } from '../../core/services/like.service';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AvatarSharedComponent } from '../../shared/avatar-shared/avatar-shared.component';
+import { ButtonSharedComponent } from '../../shared/button-shared/button-shared.component';
 import { Comment } from '../../core/models/comment.model';
 import { Post } from '../../core/models/post.model';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, AvatarSharedComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AvatarSharedComponent, ButtonSharedComponent],
   templateUrl: './post-detail.component.html',
   styleUrl: './post-detail.component.scss'
 })
@@ -37,6 +38,7 @@ export class PostDetailComponent {
   });
 
   readonly editForm = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.maxLength(100)]],
     content: ['', [Validators.required, Validators.maxLength(5000)]],
     mediaUrls: ['']
   });
@@ -57,6 +59,7 @@ export class PostDetailComponent {
       next: (post) => {
         this.post.set(post);
         this.editForm.patchValue({
+          title: post.title ?? '',
           content: post.content,
           mediaUrls: post.mediaUrls ?? ''
         });
@@ -123,6 +126,11 @@ export class PostDetailComponent {
     return target ? ['/u', target] : ['/feed'];
   }
 
+  commentAuthorLink(comment: Comment) {
+    const username = comment.username?.trim();
+    return username ? ['/u', username] : ['/feed'];
+  }
+
   toggleEdit() {
     this.editing.set(!this.editing());
   }
@@ -135,6 +143,7 @@ export class PostDetailComponent {
 
     const payload = this.editForm.getRawValue();
     this.postService.update(post.id, {
+      title: payload.title,
       content: payload.content,
       mediaUrls: payload.mediaUrls || undefined
     }).subscribe({

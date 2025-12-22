@@ -37,6 +37,7 @@ export class FeedComponent {
   readonly searchQuery = signal('');
 
   readonly form = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.maxLength(100)]],
     content: ['', [Validators.required, Validators.maxLength(5000)]]
   });
 
@@ -132,7 +133,7 @@ export class FeedComponent {
       return;
     }
 
-    const content = this.form.getRawValue().content;
+    const { title, content } = this.form.getRawValue();
     const files = this.selectedFiles;
 
     this.loading.set(true);
@@ -171,6 +172,7 @@ export class FeedComponent {
       .pipe(
         switchMap((urls) =>
           this.postService.create({
+            title,
             content,
             mediaUrls: urls.length ? urls.join(',') : undefined
           })
@@ -178,7 +180,7 @@ export class FeedComponent {
       )
       .subscribe({
         next: () => {
-          this.form.reset({ content: '' });
+          this.form.reset({ title: '', content: '' });
           this.selectedFiles = [];
           this.loading.set(false);
           this.loadFeed();

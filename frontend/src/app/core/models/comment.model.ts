@@ -4,6 +4,7 @@ export interface Comment {
   userId: number;
   username?: string;
   authorFullName?: string;
+  profilePictureUrl?: string;
   content: string;
   parentCommentId?: number;
   likeCount: number;

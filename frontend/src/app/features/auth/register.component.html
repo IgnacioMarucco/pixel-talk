@@ -89,13 +89,12 @@
         <p class="error">{{ errorMessage() }}</p>
       }
 
-      <button-shared size="lg" type="submit" [disabled]="loading()">
-        @if (loading()) {
-          <span>Loading...</span>
-        } @else {
-          <span>Create account</span>
-        }
-      </button-shared>
+      <button-shared
+        size="lg"
+        type="submit"
+        [disabled]="loading()"
+        [label]="loading() ? 'Loading...' : 'Create account'"
+      />
     </form>
 
     <p class="hint">

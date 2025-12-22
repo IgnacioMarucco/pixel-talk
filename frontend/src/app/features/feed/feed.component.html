@@ -2,18 +2,19 @@
   <div class="pixel-card toolbar">
     <div class="search">
       <input type="text" placeholder="Search posts" [value]="searchQuery()" (input)="searchQuery.set(($any($event.target)).value)" />
-      <button-shared size="sm" type="button" (click)="submitSearch()">Search</button-shared>
+      <button-shared size="sm" type="button" (click)="submitSearch()" label="Search" />
     </div>
   </div>
 
   <div class="pixel-card composer">
     <h2 class="section-title">New Post</h2>
     <form [formGroup]="form" (ngSubmit)="submitPost()">
+      <input type="text" formControlName="title" placeholder="Title" />
       <textarea rows="4" formControlName="content" placeholder="Share something..."></textarea>
 
       <div class="composer-actions">
         <input type="file" multiple (change)="onFileChange($event)" />
-        <button-shared size="md" type="submit" [disabled]="loading()">Post</button-shared>
+        <button-shared size="md" type="submit" [disabled]="loading()" label="Post" />
       </div>
 
       @if (selectedFiles.length) {
@@ -31,16 +32,16 @@
   </div>
 
   <div class="feed-list">
-    @if (!posts().length) {
-      @if (mode() === 'feed') {
-        <div class="pixel-card empty-state">
-          <p>No posts in your feed yet.</p>
-          <button-shared variant="secondary" size="sm" routerLink="/global">Explore Global</button-shared>
-        </div>
+      @if (!posts().length) {
+        @if (mode() === 'feed') {
+          <div class="pixel-card empty-state">
+            <p>No posts in your feed yet.</p>
+            <button-shared variant="secondary" size="sm" routerLink="/global" label="Explore Global" />
+          </div>
+        } @else {
+          <div class="pixel-card">No posts yet.</div>
+        }
       } @else {
-        <div class="pixel-card">No posts yet.</div>
-      }
-    } @else {
       @for (post of posts(); track post.id) {
         <article class="pixel-card post-card">
           <div class="post-aside">
@@ -48,14 +49,14 @@
             <avatar-shared [src]="post.profilePictureUrl" size="lg"></avatar-shared>
           </div>
           <div class="post-body">
-            <div class="post-meta">
-              <span class="timestamp">{{ post.createdAt | date: 'short' }}</span>
-            </div>
-            <p class="content">{{ post.contentPreview }}</p>
+          <div class="post-meta">
+            <span class="timestamp">{{ post.createdAt | date: 'short' }}</span>
+          </div>
+          <h3 class="post-title">{{ post.title }}</h3>
             <div class="post-actions">
               <span class="pixel-badge">Likes: {{ post.likeCount }}</span>
               <span class="pixel-badge">Comments: {{ post.commentCount }}</span>
-              <a class="link" [routerLink]="['/posts', post.id]">Read more</a>
+              <button-shared variant="primary" size="md" [routerLink]="['/posts', post.id]" label="Read more" />
             </div>
           </div>
         </article>

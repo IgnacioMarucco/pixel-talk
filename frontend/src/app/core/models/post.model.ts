@@ -3,7 +3,7 @@ export interface PostSummary {
   userId: number;
   username?: string;
   profilePictureUrl?: string;
-  contentPreview: string;
+  title: string;
   likeCount: number;
   commentCount: number;
   createdAt: string;
@@ -15,6 +15,7 @@ export interface Post {
   username?: string;
   authorFullName?: string;
   profilePictureUrl?: string;
+  title: string;
   content: string;
   mediaUrls?: string;
   likeCount: number;
@@ -25,11 +26,13 @@ export interface Post {
 }
 
 export interface PostCreate {
+  title: string;
   content: string;
   mediaUrls?: string;
 }
 
 export interface PostUpdate {
+  title?: string;
   content?: string;
   mediaUrls?: string;
 }

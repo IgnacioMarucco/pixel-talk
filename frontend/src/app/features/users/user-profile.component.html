@@ -15,18 +15,18 @@
           <div class="counts">
             <span class="pixel-badge">Followers: {{ followersCount() }}</span>
             <span class="pixel-badge">Following: {{ followingCount() }}</span>
+            @if (!isOwnProfile()) {
+              <button-shared
+                size="sm"
+                [variant]="following() ? 'secondary' : 'primary'"
+                type="button"
+                (click)="toggleFollow()"
+                [label]="following() ? 'Unfollow' : 'Follow'"
+              />
+            }
           </div>
         </div>
       </div>
-      @if (!isOwnProfile()) {
-        <button class="btn" type="button" (click)="toggleFollow()">
-          @if (following()) {
-            <span>Unfollow</span>
-          } @else {
-            <span>Follow</span>
-          }
-        </button>
-      }
     </div>
 
     @if (isOwnProfile()) {

@@ -20,6 +20,10 @@
   margin-bottom: 12px;
 }
 
+.composer input {
+  margin-bottom: 12px;
+}
+
 .composer-actions {
   display: flex;
   align-items: center;
@@ -63,6 +67,12 @@
 .post-body {
   display: grid;
   gap: 10px;
+}
+
+.post-title {
+  font-family: var(--cp-font-pixel);
+  font-size: 14px;
+  margin: 0;
 }
 
 .post-meta {
