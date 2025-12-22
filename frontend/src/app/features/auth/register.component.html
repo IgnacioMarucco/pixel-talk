@@ -1,0 +1,105 @@
+<div class="auth-page">
+  <div class="pixel-card auth-card">
+    <h1 class="title">Register</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Username</span>
+        <input type="text" formControlName="username" />
+        @if (form.controls.username.touched && form.controls.username.errors?.['required']) {
+          <span class="error">{{ messages.usernameRequired }}</span>
+        }
+        @if (form.controls.username.touched && form.controls.username.errors?.['minlength']) {
+          <span class="error">{{ messages.usernameSize }}</span>
+        }
+        @if (form.controls.username.touched && form.controls.username.errors?.['maxlength']) {
+          <span class="error">{{ messages.usernameSize }}</span>
+        }
+        @if (form.controls.username.touched && form.controls.username.errors?.['pattern']) {
+          <span class="error">{{ messages.usernamePattern }}</span>
+        }
+        @if (form.controls.username.errors?.['server']) {
+          <span class="error">{{ form.controls.username.errors?.['server'] }}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" />
+        @if (form.controls.email.touched && form.controls.email.errors?.['required']) {
+          <span class="error">{{ messages.emailRequired }}</span>
+        }
+        @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
+          <span class="error">{{ messages.emailInvalid }}</span>
+        }
+        @if (form.controls.email.touched && form.controls.email.errors?.['maxlength']) {
+          <span class="error">{{ messages.emailSize }}</span>
+        }
+        @if (form.controls.email.errors?.['server']) {
+          <span class="error">{{ form.controls.email.errors?.['server'] }}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" />
+        @if (form.controls.password.touched && form.controls.password.errors?.['required']) {
+          <span class="error">{{ messages.passwordRequired }}</span>
+        }
+        @if (form.controls.password.touched && form.controls.password.errors?.['minLength']) {
+          <span class="error">{{ messages.passwordSize }}</span>
+        }
+        @if (form.controls.password.errors?.['server']) {
+          <span class="error">{{ form.controls.password.errors?.['server'] }}</span>
+        }
+        @if (form.controls.password.touched || form.controls.password.dirty) {
+          <ul class="password-hints">
+            @for (rule of passwordRules; track rule.key) {
+              <li [class.ok]="isPasswordRuleMet(rule.key)" [class.fail]="!isPasswordRuleMet(rule.key)">
+                {{ rule.label }}
+              </li>
+            }
+          </ul>
+        }
+      </label>
+
+      <label class="field">
+        <span>First name</span>
+        <input type="text" formControlName="firstName" />
+        @if (form.controls.firstName.touched && form.controls.firstName.errors?.['maxlength']) {
+          <span class="error">{{ messages.firstNameSize }}</span>
+        }
+        @if (form.controls.firstName.errors?.['server']) {
+          <span class="error">{{ form.controls.firstName.errors?.['server'] }}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Last name</span>
+        <input type="text" formControlName="lastName" />
+        @if (form.controls.lastName.touched && form.controls.lastName.errors?.['maxlength']) {
+          <span class="error">{{ messages.lastNameSize }}</span>
+        }
+        @if (form.controls.lastName.errors?.['server']) {
+          <span class="error">{{ form.controls.lastName.errors?.['server'] }}</span>
+        }
+      </label>
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+
+      <button-shared size="lg" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <span>Loading...</span>
+        } @else {
+          <span>Create account</span>
+        }
+      </button-shared>
+    </form>
+
+    <p class="hint">
+      Have an account? <a routerLink="/login">Login</a>
+    </p>
+  </div>
+</div>

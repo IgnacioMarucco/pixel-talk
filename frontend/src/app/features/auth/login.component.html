@@ -1,0 +1,33 @@
+<div class="auth-page">
+  <div class="pixel-card auth-card">
+    <h1 class="title">Login</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Username or email</span>
+        <input type="text" formControlName="usernameOrEmail" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" />
+      </label>
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+
+      <button-shared size="lg" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <span>Loading...</span>
+        } @else {
+          <span>Login</span>
+        }
+      </button-shared>
+    </form>
+
+    <p class="hint">
+      No account? <a routerLink="/register">Register</a>
+    </p>
+  </div>
+</div>

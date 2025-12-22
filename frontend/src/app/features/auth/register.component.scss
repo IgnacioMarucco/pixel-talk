@@ -1,0 +1,19 @@
+@use './login.component';
+
+.password-hints {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--cp-muted);
+}
+
+.password-hints li.ok {
+  color: #1b7f3b;
+}
+
+.password-hints li.fail {
+  color: #b03a2e;
+}
