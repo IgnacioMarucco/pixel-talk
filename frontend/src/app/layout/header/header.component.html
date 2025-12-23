@@ -12,6 +12,15 @@
         [routerLink]="profileLink()"
         [label]="displayName()"
       />
+      <button
+        type="button"
+        class="theme-toggle"
+        [attr.data-mode]="themeService.mode()"
+        [attr.data-theme]="themeService.theme()"
+        [attr.aria-label]="themeLabel()"
+        [attr.title]="themeLabel()"
+        (click)="toggleTheme()"
+      ></button>
       <button-shared size="sm" type="button" (click)="logout()" label="Logout" />
     }
   </div>

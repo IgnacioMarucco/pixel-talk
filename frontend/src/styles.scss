@@ -10,6 +10,16 @@
   --cp-font-body: "Space Grotesk", "Inter", system-ui, sans-serif;
 }
 
+body.theme-dark {
+  --cp-bg: #1b1916;
+  --cp-surface: #2a2622;
+  --cp-text: #f6f2ea;
+  --cp-border: #f6f2ea;
+  --cp-accent: #ff6b4a;
+  --cp-accent-soft: #3a2a23;
+  --cp-muted: #b2aaa0;
+}
+
 * {
   box-sizing: border-box;
 }

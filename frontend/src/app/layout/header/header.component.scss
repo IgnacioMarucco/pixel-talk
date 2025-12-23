@@ -31,6 +31,25 @@
   font-size: 14px;
 }
 
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--cp-border);
+  background: var(--cp-accent-soft);
+  box-shadow: 3px 3px 0 0 var(--cp-border);
+  cursor: pointer;
+}
+
+.theme-toggle[data-mode='auto'] {
+  background: linear-gradient(135deg, var(--cp-bg) 0 50%, var(--cp-text) 50% 100%);
+}
+
+.theme-toggle[data-mode='light'],
+.theme-toggle[data-mode='dark'] {
+  background: var(--cp-text);
+}
+
 @media (max-width: 720px) {
   .app-header {
     flex-direction: column;
