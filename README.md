@@ -13,6 +13,7 @@
 ## 📖 Table of Contents
 
 - [Overview](#-overview)
+- [Screenshots](#-screenshots)
 - [System Architecture](#-system-architecture)
 - [Technology Stack](#-technology-stack)
 - [Design Patterns & Best Practices](#-design-patterns--best-practices)
@@ -39,6 +40,14 @@
 - **Modern SPA** built with Angular 19 standalone components
 - **Containerized deployment** with Docker multi-stage builds
 - **RESTful API design** with comprehensive OpenAPI/Swagger documentation
+
+---
+
+## 📸 Screenshots
+
+| Feed | Post Detail |
+|---|---|
+| ![](screenshots/feed.png) | ![](screenshots/post-minio.png) |
 
 ---
 
