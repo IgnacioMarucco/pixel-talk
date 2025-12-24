@@ -17,9 +17,9 @@
         <button-shared size="md" type="submit" [disabled]="loading()" label="Post" />
       </div>
 
-      @if (selectedFiles.length) {
+      @if (selectedFiles().length) {
         <div class="file-list">
-          @for (file of selectedFiles; track file.name) {
+          @for (file of selectedFiles(); track file.name) {
             <span class="pixel-badge">{{ file.name }}</span>
           }
         </div>
@@ -33,7 +33,7 @@
 
   <div class="feed-list">
       @if (!posts().length) {
-        @if (mode() === 'feed') {
+        @if (viewMode() === 'feed') {
           <div class="pixel-card empty-state">
             <p>No posts in your feed yet.</p>
             <button-shared variant="secondary" size="sm" routerLink="/global" label="Explore Global" />
@@ -42,24 +42,28 @@
           <div class="pixel-card">No posts yet.</div>
         }
       } @else {
-      @for (post of posts(); track post.id) {
-        <article class="pixel-card post-card">
-          <div class="post-aside">
-            <a class="author link" [routerLink]="authorLink(post.username, post.userId)">{{ post.username ?? 'user' }}</a>
-            <avatar-shared [src]="post.profilePictureUrl" size="lg"></avatar-shared>
-          </div>
-          <div class="post-body">
-          <div class="post-meta">
-            <span class="timestamp">{{ post.createdAt | date: 'short' }}</span>
-          </div>
-          <h3 class="post-title">{{ post.title }}</h3>
-            <div class="post-actions">
-              <span class="pixel-badge">Likes: {{ post.likeCount }}</span>
-              <span class="pixel-badge">Comments: {{ post.commentCount }}</span>
-              <button-shared variant="primary" size="md" [routerLink]="['/posts', post.id]" label="Read more" />
+      @defer (on viewport) {
+        @for (post of posts(); track post.id) {
+          <article class="pixel-card post-card">
+            <div class="post-aside">
+              <a class="author link" [routerLink]="authorLink(post.username, post.userId)">{{ post.username ?? 'user' }}</a>
+              <avatar-shared [src]="post.profilePictureUrl" size="lg"></avatar-shared>
             </div>
-          </div>
-        </article>
+            <div class="post-body">
+            <div class="post-meta">
+              <span class="timestamp">{{ post.createdAt | date: 'short' }}</span>
+            </div>
+            <h3 class="post-title">{{ post.title }}</h3>
+              <div class="post-actions">
+                <span class="pixel-badge">Likes: {{ post.likeCount }}</span>
+                <span class="pixel-badge">Comments: {{ post.commentCount }}</span>
+                <button-shared variant="primary" size="md" [routerLink]="['/posts', post.id]" label="Read more" />
+              </div>
+            </div>
+          </article>
+        }
+      } @placeholder {
+        <div class="pixel-card">Loading posts...</div>
       }
     }
   </div>

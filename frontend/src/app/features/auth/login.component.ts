@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ButtonSharedComponent } from '../../shared/button-shared/button-shared.component';
+import { RedirectService } from '../../core/services/redirect.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +18,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private redirectService = inject(RedirectService);
 
   readonly errorMessage = signal<string | null>(null);
   readonly loading = signal(false);
@@ -35,16 +37,23 @@ export class LoginComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/feed';
-        this.router.navigate([returnUrl]);
-      },
-      error: (err) => {
-        const detail = err?.error?.detail ?? 'Login failed';
-        this.errorMessage.set(detail);
-        this.loading.set(false);
-      }
-    });
+    this.authService.login(this.form.getRawValue())
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          if (!this.authService.isAuthenticated()) {
+            this.errorMessage.set('Login failed. Invalid auth response.');
+            return;
+          }
+          const returnUrl = this.redirectService.consume('/feed');
+          this.router.navigateByUrl(returnUrl).catch(() => {
+            this.errorMessage.set('Login succeeded but navigation failed.');
+          });
+        },
+        error: (err) => {
+          const detail = err?.error?.detail ?? 'Login failed';
+          this.errorMessage.set(detail);
+        }
+      });
   }
 }

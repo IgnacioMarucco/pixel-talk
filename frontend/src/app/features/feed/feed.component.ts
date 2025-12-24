@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { concatMap, from, map, of, switchMap, toArray } from 'rxjs';
 import { MediaService } from '../../core/services/media.service';
 import { PostService } from '../../core/services/post.service';
@@ -24,27 +24,31 @@ import { ButtonSharedComponent } from '../../shared/button-shared/button-shared.
   styleUrl: './feed.component.scss'
 })
 export class FeedComponent {
-  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private postService = inject(PostService);
   private mediaService = inject(MediaService);
   private authService = inject(AuthService);
 
+  readonly mode = input<'feed' | 'global' | 'trending'>('feed');
   readonly posts = signal<PostSummary[]>([]);
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly mode = signal<'feed' | 'global' | 'trending' | 'search'>('feed');
+  readonly viewMode = signal<'feed' | 'global' | 'trending' | 'search'>('feed');
   readonly searchQuery = signal('');
+  readonly selectedFiles = signal<File[]>([]);
 
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(100)]],
     content: ['', [Validators.required, Validators.maxLength(5000)]]
   });
 
-  selectedFiles: File[] = [];
-
   constructor() {
-    const mode = this.route.snapshot.data['mode'] as 'feed' | 'global' | 'trending' | undefined;
+    effect(() => {
+      this.loadFromRoute(this.mode());
+    });
+  }
+
+  private loadFromRoute(mode: 'feed' | 'global' | 'trending') {
     if (mode === 'global') {
       this.loadGlobal();
       return;
@@ -57,7 +61,7 @@ export class FeedComponent {
   }
 
   loadFeed() {
-    this.mode.set('feed');
+    this.viewMode.set('feed');
     this.searchQuery.set('');
     this.errorMessage.set(null);
     this.postService.getFeed().subscribe({
@@ -71,7 +75,7 @@ export class FeedComponent {
   }
 
   loadGlobal() {
-    this.mode.set('global');
+    this.viewMode.set('global');
     this.searchQuery.set('');
     this.errorMessage.set(null);
     this.postService.getGlobal().subscribe({
@@ -85,7 +89,7 @@ export class FeedComponent {
   }
 
   loadTrending() {
-    this.mode.set('trending');
+    this.viewMode.set('trending');
     this.searchQuery.set('');
     this.errorMessage.set(null);
     this.postService.getTrending().subscribe({
@@ -97,10 +101,10 @@ export class FeedComponent {
   submitSearch() {
     const query = this.searchQuery().trim();
     if (!query) {
-      this.loadFeed();
+      this.loadFromRoute(this.mode());
       return;
     }
-    this.mode.set('search');
+    this.viewMode.set('search');
     this.errorMessage.set(null);
     this.postService.search(query).subscribe({
       next: (page) => this.posts.set(page.content ?? []),
@@ -121,10 +125,10 @@ export class FeedComponent {
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files) {
-      this.selectedFiles = [];
+      this.selectedFiles.set([]);
       return;
     }
-    this.selectedFiles = Array.from(input.files);
+    this.selectedFiles.set(Array.from(input.files));
   }
 
   submitPost() {
@@ -134,7 +138,7 @@ export class FeedComponent {
     }
 
     const { title, content } = this.form.getRawValue();
-    const files = this.selectedFiles;
+    const files = this.selectedFiles();
 
     this.loading.set(true);
     this.errorMessage.set(null);
@@ -181,7 +185,7 @@ export class FeedComponent {
       .subscribe({
         next: () => {
           this.form.reset({ title: '', content: '' });
-          this.selectedFiles = [];
+          this.selectedFiles.set([]);
           this.loading.set(false);
           this.loadFeed();
         },

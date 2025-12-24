@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommentService } from '../../core/services/comment.service';
 import { LikeService } from '../../core/services/like.service';
 import { PostService } from '../../core/services/post.service';
@@ -19,7 +19,6 @@ import { Post } from '../../core/models/post.model';
   styleUrl: './post-detail.component.scss'
 })
 export class PostDetailComponent {
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private postService = inject(PostService);
   private commentService = inject(CommentService);
@@ -27,11 +26,42 @@ export class PostDetailComponent {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
+  readonly id = input.required<string>();
+  readonly postId = computed(() => {
+    const parsed = Number(this.id());
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  });
+
   readonly post = signal<Post | null>(null);
   readonly comments = signal<Comment[]>([]);
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly editing = signal(false);
+  readonly mediaUrls = computed(() => {
+    const raw = this.post()?.mediaUrls;
+    if (!raw) {
+      return [] as string[];
+    }
+    return raw.split(',').map((entry) => entry.trim()).filter(Boolean);
+  });
+  readonly canEdit = computed(() => {
+    const post = this.post();
+    const auth = this.authService.auth();
+    return !!post && !!auth && post.userId === auth.userId;
+  });
+  readonly authorLink = computed(() => {
+    const post = this.post();
+    if (!post) {
+      return ['/feed'];
+    }
+    const auth = this.authService.auth();
+    const target = post.username?.trim();
+    if (auth && (auth.userId === post.userId || auth.username?.trim() === target)) {
+      const selfName = auth.username?.trim() ?? target;
+      return selfName ? ['/u', selfName] : ['/feed'];
+    }
+    return target ? ['/u', target] : ['/feed'];
+  });
 
   readonly commentForm = this.fb.nonNullable.group({
     content: ['', [Validators.required, Validators.maxLength(1000)]]
@@ -44,16 +74,27 @@ export class PostDetailComponent {
   });
 
   constructor() {
-    this.load();
+    effect(() => {
+      const id = this.postId();
+      if (!id) {
+        this.post.set(null);
+        this.comments.set([]);
+        this.errorMessage.set('Post not found');
+        this.loading.set(false);
+        return;
+      }
+      this.loadPost(id);
+    });
   }
 
-  load() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!id) {
-      this.errorMessage.set('Post not found');
-      return;
-    }
+  private loadPost(id: number) {
     this.loading.set(true);
+    this.errorMessage.set(null);
+    this.editing.set(false);
+    this.post.set(null);
+    this.comments.set([]);
+    this.commentForm.reset({ content: '' });
+    this.editForm.reset({ title: '', content: '', mediaUrls: '' });
 
     this.postService.getById(id).subscribe({
       next: (post) => {
@@ -77,14 +118,6 @@ export class PostDetailComponent {
     });
   }
 
-  mediaUrls() {
-    const raw = this.post()?.mediaUrls;
-    if (!raw) {
-      return [] as string[];
-    }
-    return raw.split(',').map((entry) => entry.trim()).filter(Boolean);
-  }
-
   togglePostLike() {
     const post = this.post();
     if (!post) {
@@ -104,26 +137,6 @@ export class PostDetailComponent {
       },
       error: () => this.errorMessage.set('Failed to update like')
     });
-  }
-
-  canEdit() {
-    const post = this.post();
-    const auth = this.authService.auth();
-    return !!post && !!auth && post.userId === auth.userId;
-  }
-
-  authorLink() {
-    const post = this.post();
-    if (!post) {
-      return ['/feed'];
-    }
-    const auth = this.authService.auth();
-    const target = post.username?.trim();
-    if (auth && (auth.userId === post.userId || auth.username?.trim() === target)) {
-      const selfName = auth.username?.trim() ?? target;
-      return selfName ? ['/u', selfName] : ['/feed'];
-    }
-    return target ? ['/u', target] : ['/feed'];
   }
 
   commentAuthorLink(comment: Comment) {

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { FollowService } from '../../core/services/follow.service';
 import { UserService } from '../../core/services/user.service';
@@ -16,12 +15,12 @@ import { ButtonSharedComponent } from '../../shared/button-shared/button-shared.
   styleUrl: './user-profile.component.scss'
 })
 export class UserProfileComponent {
-  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private followService = inject(FollowService);
   private fb = inject(FormBuilder);
 
+  readonly username = input.required<string>();
   readonly user = signal<User | null>(null);
   readonly following = signal(false);
   readonly followersCount = signal(0);
@@ -43,10 +42,16 @@ export class UserProfileComponent {
   });
 
   constructor() {
-    this.route.paramMap.subscribe((params) => {
-      const username = params.get('username');
+    effect(() => {
+      const raw = this.username();
+      const username = raw?.trim();
       if (!username) {
+        this.user.set(null);
+        this.following.set(false);
+        this.followersCount.set(0);
+        this.followingCount.set(0);
         this.errorMessage.set('User not found');
+        this.loading.set(false);
         return;
       }
       this.loadUser(username);

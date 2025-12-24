@@ -24,11 +24,15 @@
             <p class="content">{{ post()?.content }}</p>
 
             @if (mediaUrls().length) {
-              <div class="media-grid">
-                @for (url of mediaUrls(); track url) {
-                  <img [src]="url" alt="media" />
-                }
-              </div>
+              @defer (on viewport) {
+                <div class="media-grid">
+                  @for (url of mediaUrls(); track url) {
+                    <img [src]="url" alt="media" />
+                  }
+                </div>
+              } @placeholder {
+                <div class="pixel-card">Loading media...</div>
+              }
             }
 
             <div class="post-footer">
@@ -79,32 +83,36 @@
     @if (!comments().length) {
       <div class="pixel-card">No comments yet.</div>
     } @else {
-      @for (comment of comments(); track comment.id) {
-        <div class="pixel-card comment-card">
-          <div class="comment-aside">
-            <a class="author link" [routerLink]="commentAuthorLink(comment)">{{ comment.username ?? 'user' }}</a>
-            <avatar-shared [src]="comment.profilePictureUrl" size="sm"></avatar-shared>
-          </div>
-          <div class="comment-body">
-            <div class="comment-meta">
-              <span>{{ comment.createdAt | date: 'short' }}</span>
+      @defer (on viewport) {
+        @for (comment of comments(); track comment.id) {
+          <div class="pixel-card comment-card">
+            <div class="comment-aside">
+              <a class="author link" [routerLink]="commentAuthorLink(comment)">{{ comment.username ?? 'user' }}</a>
+              <avatar-shared [src]="comment.profilePictureUrl" size="sm"></avatar-shared>
             </div>
-            <p class="comment-content">{{ comment.content }}</p>
-            <div class="comment-actions">
-              <button class="btn secondary" type="button" (click)="toggleCommentLike(comment)">
-                @if (comment.likedByCurrentUser) {
-                  <span>Unlike</span>
-                } @else {
-                  <span>Like</span>
+            <div class="comment-body">
+              <div class="comment-meta">
+                <span>{{ comment.createdAt | date: 'short' }}</span>
+              </div>
+              <p class="comment-content">{{ comment.content }}</p>
+              <div class="comment-actions">
+                <button class="btn secondary" type="button" (click)="toggleCommentLike(comment)">
+                  @if (comment.likedByCurrentUser) {
+                    <span>Unlike</span>
+                  } @else {
+                    <span>Like</span>
+                  }
+                </button>
+                <span class="pixel-badge">Likes: {{ comment.likeCount }}</span>
+                @if (canEditComment(comment)) {
+                  <button class="btn danger" type="button" (click)="deleteComment(comment)">Delete</button>
                 }
-              </button>
-              <span class="pixel-badge">Likes: {{ comment.likeCount }}</span>
-              @if (canEditComment(comment)) {
-                <button class="btn danger" type="button" (click)="deleteComment(comment)">Delete</button>
-              }
+              </div>
             </div>
           </div>
-        </div>
+        }
+      } @placeholder {
+        <div class="pixel-card">Loading comments...</div>
       }
     }
   </section>

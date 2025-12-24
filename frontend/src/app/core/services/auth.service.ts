@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MonoTypeOperatorFunction, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { AuthResponse, LoginRequest, RefreshTokenRequest, RegisterRequest } from '../models/auth.model';
+import { RedirectService } from './redirect.service';
 
 interface AuthState {
   accessToken: string;
@@ -19,6 +20,7 @@ const STORAGE_KEY = 'cp_auth';
 export class AuthService {
   private api = inject(ApiService);
   private router = inject(Router);
+  private redirectService = inject(RedirectService);
 
   private state = signal<AuthState | null>(this.loadFromStorage());
 
@@ -74,7 +76,8 @@ export class AuthService {
 
   clearAuth() {
     this.state.set(null);
-    this.router.navigate(['/login']);
+    this.redirectService.clear();
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   getAccessToken(): string | null {
